@@ -89,29 +89,6 @@ CModule::EModRet TwitchTMI::OnChanMsg(CNick& nick, CChan& channel, CString& sMes
 	if(nick.GetNick().Equals("jtv", true))
 		return CModule::HALT;
 
-	if(sMessage == "FrankerZ" && std::time(nullptr) - lastFrankerZ > 10)
-	{
-		std::stringstream ss1, ss2;
-		CString mynick = GetNetwork()->GetIRCNick().GetNickMask();
-
-		ss1 << "PRIVMSG " << channel.GetName() << " :FrankerZ";
-		ss2 << ":" << mynick << " PRIVMSG " << channel.GetName() << " :";
-
-		PutIRC(ss1.str());
-		CString s2 = ss2.str();
-
-		CThreadPool::Get().addJob(new GenericJob([]() {}, [this, s2, &channel]()
-		{
-			PutUser(s2 + "FrankerZ");
-
-			if(!channel.AutoClearChanBuffer() || !GetNetwork()->IsUserOnline() || channel.IsDetached()) {
-				channel.AddBuffer(s2+ "{text}", "FrankerZ");
-			}
-		}));
-
-		lastFrankerZ = std::time(nullptr);
-	}
-
 	return CModule::CONTINUE;
 }
 
